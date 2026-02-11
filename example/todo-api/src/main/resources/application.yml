@@ -1,0 +1,36 @@
+# =============================================================
+# [설계 포인트] application.yml
+# 실무에서는 환경별로 설정을 분리한다.
+# - application.yml         : 공통 설정
+# - application-local.yml   : 로컬 개발 (H2, debug 로그)
+# - application-dev.yml     : 개발 서버 (개발 DB)
+# - application-prod.yml    : 운영 서버 (운영 DB, 최소 로그)
+#
+# 지금은 학습용이므로 하나의 파일에 작성한다.
+# =============================================================
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:tododb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true          # http://localhost:8080/h2-console 에서 DB 확인 가능
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # 앱 시작시 테이블 생성, 종료시 삭제. 운영에서는 절대 쓰지 않는다 (validate 사용)
+    properties:
+      hibernate:
+        format_sql: true      # SQL 로그를 보기 좋게 출력
+        default_batch_fetch_size: 100  # N+1 문제 완화를 위한 기본 배치 사이즈
+    open-in-view: false       # 실무에서는 반드시 false. true면 Controller까지 DB 커넥션을 물고 있어 성능 저하
+
+logging:
+  level:
+    org.hibernate.SQL: debug                    # 실행되는 SQL 확인
+    org.hibernate.orm.jdbc.bind: trace          # 바인딩 파라미터 값 확인
